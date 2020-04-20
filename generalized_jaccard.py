@@ -315,13 +315,13 @@ def get_word_items_unique(ngram_matrix, word_inds, second_order = False, ignore_
 
 def get_word_items(ngram_matrix, word_inds, second_order = False, ignore_frequency = False):
     print('Gathering Word Items')
-    if word_inds: # word_inds provides list of indices from which to derive jaccard matrix
-        items = []
-        for ind,i in enumerate(word_inds): # for loop converts wd to set
+#    if word_inds: # word_inds provides list of indices from which to derive jaccard matrix
+    items = []
+    for ind,i in enumerate(word_inds): # for loop converts wd to set
 #            print(str(ind + 1) + '/' + str(len(word_inds)))
 #            items.append(get_item_ngram_matrix(ngram_matrix,i,second_order,ignore_frequency))
-            items.append(get_item_ngram_matrix(ngram_matrix,i,second_order,ignore_frequency))
-        print('finished gathering items')
+        items.append(get_item_ngram_matrix(ngram_matrix,i,second_order,ignore_frequency))
+    print('finished gathering items')
     return items
     
 

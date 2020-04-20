@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 
 # generate random vectors for each word
 dims = 10000
-wd,mydict = get_wd.loadCorpus('../../first_second_order/corpus/artificialGrammar.txt')
+wd,mydict = get_wd.loadCorpus('artificialGrammar.txt')
 vects = np.random.normal(0,1/np.sqrt(dims),(len(mydict),dims))
 
 def cosine_table_self(vects): # get cosine table, input one matrix
@@ -143,3 +143,52 @@ ahm.annotate_heatmap(im, valfmt="{x:.1f}", fontsize = 10)
 fig.tight_layout()
 fig = plt.gcf()
 fig.set_size_inches(img_size, img_size)
+
+
+#############################
+# context binding as multiplication with normalization
+
+dims = 10000
+wd,mydict = get_wd.loadCorpus('artificialGrammar.txt')
+vects = np.random.normal(0,1/np.sqrt(dims),(len(mydict),dims))
+
+
+# input layer is a localist word activation
+# output layer is a distributed activation
+# where the distribution is the sum of convolved vectors where a word occurs
+mem_conv = np.zeros((len(mydict),dims))
+for row in wd:
+    print(sparse.find(row)[1])
+    vect = np.ones(dims)
+    for i in sparse.find(row)[1]:
+        vect *= vects[i]
+    for i in sparse.find(row)[1]:
+        mem_conv[i] += vect
+
+#mem_conv = np.fft.irfft(mem_conv)
+
+first_conv = cosine_table_self(mem_conv)
+np.fill_diagonal(first_conv,0)
+
+img_size = 15
+fig, ax = plt.subplots()
+im, cbar = ahm.heatmap(first_conv, sorted(mydict.keys()), sorted(mydict.keys()), ax=ax,
+                   cmap="gist_heat", cbarlabel='Jaccard Index')
+ahm.annotate_heatmap(im, valfmt="{x:.1f}", fontsize = 10)
+fig.tight_layout()
+fig = plt.gcf()
+fig.set_size_inches(img_size, img_size)
+
+second_conv = cosine_table_self(first_conv)
+np.fill_diagonal(second_conv,0)
+
+img_size = 15
+fig, ax = plt.subplots()
+im, cbar = ahm.heatmap(second_conv, sorted(mydict.keys()), sorted(mydict.keys()), ax=ax,
+                   cmap="gist_heat", cbarlabel='Jaccard Index')
+ahm.annotate_heatmap(im, valfmt="{x:.1f}", fontsize = 10)
+fig.tight_layout()
+fig = plt.gcf()
+fig.set_size_inches(img_size, img_size)
+#plt.show()
+#fig.savefig('heatmaps/glove.png', dpi=100, transparent = True)
